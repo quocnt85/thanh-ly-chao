@@ -7,6 +7,22 @@
     quocnt: 0.2
   };
 
+  // Ordered Category Definitions so products never mix Chảo -> Xoong -> Chảo -> Nồi
+  const CATEGORY_META = [
+    { id: 'Chảo chống dính Ý', icon: '🍳', title: 'Chảo chống dính Ý', subtitle: 'TVS Italy cao cấp • Đầy đủ kích thước ø16cm – ø28cm' },
+    { id: 'Nồi & Xoong Ý', icon: '🍲', title: 'Nồi & Xoong Ý', subtitle: 'TVS Italy • Nồi kèm vung kính & xoong quánh chống dính / phủ gốm' },
+    { id: 'Lọ & Hũ thủy tinh', icon: '🫙', title: 'Lọ & Hũ thủy tinh Ý', subtitle: 'Borgonovo Italy • Thủy tinh không chì an toàn thực phẩm' },
+    { id: 'Bình giữ nhiệt', icon: '🌡️', title: 'Bình thủy giữ nhiệt Ý', subtitle: 'Giữ nhiệt nóng/lạnh 0.5L – 2.8L' },
+    { id: 'Bộ cốc & Ly thủy tinh', icon: '🥂', title: 'Bộ cốc & Ly thủy tinh Ý', subtitle: 'Borgonovo Italy • Thủy tinh cao cấp trong suốt' },
+    { id: 'Phụ kiện bàn ăn', icon: '🍊', title: 'Phụ kiện nhà bếp & Bàn ăn', subtitle: 'Borgonovo Italy' },
+    { id: 'Vung kính', icon: '🛡️', title: 'Vung kính rời & Hàng tặng kèm', subtitle: 'Vung kính chịu nhiệt ø16cm – ø24cm' }
+  ];
+
+  const CATEGORY_ORDER_MAP = new Map(CATEGORY_META.map((c, idx) => [c.id, idx]));
+
+  const DIAMETER_SIZES = ['ø14cm', 'ø16cm', 'ø18cm', 'ø20cm', 'ø22cm', 'ø24cm', 'ø26cm', 'ø28cm'];
+  const CAPACITY_SIZES = ['420ml', '0.5L', '1L', '1.5L', '2L', '2.8L', '3.1L', '4.25L'];
+
   const products = Array.isArray(window.CATALOG_PRODUCTS) ? window.CATALOG_PRODUCTS : [];
   const productByCode = new Map(products.map((p) => [p.code, p]));
 
@@ -15,9 +31,10 @@
   let buyerInfo = loadBuyerInfo();
   let promoCode = loadPromoCode();
   let activeCategory = 'ALL';
-  let activeSeries = 'ALL';
+  let selectedSizes = new Set();   // Set<string> e.g. 'ø20cm', 'ø24cm'
+  let selectedSeries = new Set();  // Set<string> e.g. 'Blackstone', 'Velvet'
   let searchQuery = '';
-  let sortBy = 'code-asc';
+  let sortBy = 'category-asc';
   let onlyInCart = false;
   let activePhotoIndexByCode = new Map(); // code -> 0 or 1
   let currentLightboxProduct = null;
@@ -26,6 +43,17 @@
 
   function formatVND(amount) {
     return `${vndFormatter.format(Math.round(Number(amount) || 0))} ₫`;
+  }
+
+  function parseNumericSize(sizeStr) {
+    if (!sizeStr) return 9999;
+    const mCm = sizeStr.match(/(\d+(?:\.\d+)?)\s*cm/i);
+    if (mCm) return parseFloat(mCm[1]);
+    const mMl = sizeStr.match(/(\d+(?:\.\d+)?)\s*ml/i);
+    if (mMl) return parseFloat(mMl[1]) / 1000;
+    const mL = sizeStr.match(/(\d+(?:\.\d+)?)\s*L/i);
+    if (mL) return parseFloat(mL[1]) * 100;
+    return 9999;
   }
 
   function getDiscountRate() {
@@ -115,7 +143,7 @@
       promoCode = '';
       savePromoCode();
       syncPromoUI();
-      renderCatalogGrid();
+      renderCatalog();
       updateCartSummaryUI();
       renderCartModalContent();
       showToast('Đã gỡ mã giảm giá.');
@@ -126,7 +154,7 @@
       promoCode = clean;
       savePromoCode();
       syncPromoUI();
-      renderCatalogGrid();
+      renderCatalog();
       updateCartSummaryUI();
       renderCartModalContent();
       showToast(`🎉 Đã áp dụng mã ${clean.toUpperCase()}: Giảm thêm ${Math.round(VALID_PROMOS[clean] * 100)}%!`);
@@ -164,13 +192,13 @@
   function createSvgPlaceholder(product) {
     const isLid = product.category === 'Vung kính';
     const iconSvg = isLid
-      ? `<ellipse cx="200" cy="155" rx="105" ry="38" fill="none" stroke="#64748b" stroke-width="6"/><path d="M95 155 C95 100, 305 100, 305 155" fill="rgba(148,163,184,0.18)" stroke="#475569" stroke-width="5"/><rect x="182" y="88" width="36" height="14" rx="6" fill="#334155"/>`
-      : `<rect x="145" y="85" width="48" height="95" rx="6" fill="rgba(148,163,184,0.2)" stroke="#475569" stroke-width="5"/><rect x="207" y="95" width="48" height="85" rx="6" fill="rgba(148,163,184,0.2)" stroke="#475569" stroke-width="5"/>`;
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300">
-      <rect width="400" height="300" fill="#f1f5f9"/>
+      ? `<ellipse cx="200" cy="195" rx="105" ry="38" fill="none" stroke="#64748b" stroke-width="6"/><path d="M95 195 C95 140, 305 140, 305 195" fill="rgba(148,163,184,0.18)" stroke="#475569" stroke-width="5"/><rect x="182" y="128" width="36" height="14" rx="6" fill="#334155"/>`
+      : `<rect x="145" y="125" width="48" height="95" rx="6" fill="rgba(148,163,184,0.2)" stroke="#475569" stroke-width="5"/><rect x="207" y="135" width="48" height="85" rx="6" fill="rgba(148,163,184,0.2)" stroke="#475569" stroke-width="5"/>`;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+      <rect width="400" height="400" fill="#f1f5f9"/>
       ${iconSvg}
-      <text x="200" y="225" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="bold" fill="#334155">${escapeHtml(product.name)}</text>
-      <text x="200" y="248" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#64748b">${escapeHtml(product.packSpec)}</text>
+      <text x="200" y="275" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="bold" fill="#334155">${escapeHtml(product.name)}</text>
+      <text x="200" y="300" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#64748b">${escapeHtml(product.packSpec)}</text>
     </svg>`;
     return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
   }
@@ -249,12 +277,32 @@
     }
   }
 
+  function compareProductsWithinCategory(a, b) {
+    if (sortBy === 'price-asc') return a.price - b.price || parseNumericSize(a.size) - parseNumericSize(b.size) || a.code - b.code;
+    if (sortBy === 'price-desc') return b.price - a.price || parseNumericSize(a.size) - parseNumericSize(b.size) || a.code - b.code;
+    if (sortBy === 'stock-desc') return b.stock - a.stock || a.code - b.code;
+    if (sortBy === 'size-asc') return parseNumericSize(a.size) - parseNumericSize(b.size) || a.series.localeCompare(b.series, 'vi') || a.code - b.code;
+    if (sortBy === 'code-asc') return a.code - b.code;
+
+    // Default ('category-asc'): group by Category -> Series -> Size (small to large) -> Code
+    const catDiff = (CATEGORY_ORDER_MAP.get(a.category) ?? 99) - (CATEGORY_ORDER_MAP.get(b.category) ?? 99);
+    if (catDiff !== 0) return catDiff;
+    if (a.series !== b.series) {
+      // Keep original series appearance order within the category, or alphabetical
+      return a.code - b.code;
+    }
+    const sizeDiff = parseNumericSize(a.size) - parseNumericSize(b.size);
+    if (sizeDiff !== 0) return sizeDiff;
+    return a.code - b.code;
+  }
+
   function getFilteredProducts() {
     const q = searchQuery.trim().toLowerCase();
     const filtered = products.filter((p) => {
       if (onlyInCart && !cart.has(p.code)) return false;
       if (activeCategory !== 'ALL' && p.category !== activeCategory) return false;
-      if (activeSeries !== 'ALL' && p.series !== activeSeries) return false;
+      if (selectedSizes.size > 0 && !selectedSizes.has(p.size)) return false;
+      if (selectedSeries.size > 0 && !selectedSeries.has(p.series)) return false;
       if (q) {
         const hay = `${p.code} #${p.code} ${p.name} ${p.series} ${p.category} ${p.brand} ${p.note} ${p.size}`.toLowerCase();
         if (!hay.includes(q)) return false;
@@ -262,65 +310,265 @@
       return true;
     });
 
-    filtered.sort((a, b) => {
-      if (sortBy === 'price-asc') return a.price - b.price || a.code - b.code;
-      if (sortBy === 'price-desc') return b.price - a.price || a.code - b.code;
-      if (sortBy === 'stock-desc') return b.stock - a.stock || a.code - b.code;
-      return a.code - b.code;
-    });
-
+    filtered.sort(compareProductsWithinCategory);
     return filtered;
   }
 
-  function renderCategoryTabs() {
-    const container = document.getElementById('category-tabs');
-    if (!container) return;
+  function renderSidebar() {
+    // 1. Categories list
+    const catContainer = document.getElementById('sidebar-category-list');
+    if (catContainer) {
+      const counts = new Map();
+      for (const p of products) {
+        counts.set(p.category, (counts.get(p.category) || 0) + 1);
+      }
 
-    const counts = new Map();
-    for (const p of products) {
-      counts.set(p.category, (counts.get(p.category) || 0) + 1);
+      const itemsHtml = [
+        `<button type="button" class="sidebar-cat-btn" data-cat="ALL" aria-pressed="${activeCategory === 'ALL'}">
+          <span>📋 Tất cả danh mục</span>
+          <span class="sidebar-cat-count">${products.length}</span>
+        </button>`,
+        ...CATEGORY_META.map((c) => {
+          const count = counts.get(c.id) || 0;
+          if (count === 0) return '';
+          return `<button type="button" class="sidebar-cat-btn" data-cat="${escapeHtml(c.id)}" aria-pressed="${activeCategory === c.id}">
+            <span>${c.icon} ${escapeHtml(c.title)}</span>
+            <span class="sidebar-cat-count">${count}</span>
+          </button>`;
+        })
+      ].join('');
+
+      catContainer.innerHTML = itemsHtml;
     }
 
-    const categories = [
-      { id: 'ALL', label: `Tất cả (${products.length})` },
-      ...Array.from(counts.entries()).map(([cat, count]) => ({
-        id: cat,
-        label: `${cat} (${count})`
-      }))
-    ];
+    // 2. Sizes (Diameter & Capacity)
+    const diamContainer = document.getElementById('sidebar-size-diameter');
+    const capContainer = document.getElementById('sidebar-size-capacity');
+    const clearSizeBtn = document.getElementById('clear-size-filter-btn');
 
-    container.innerHTML = categories
-      .map(
-        (c) => `<button type="button" class="cat-tab" data-cat="${escapeHtml(c.id)}" aria-pressed="${activeCategory === c.id}">
-          ${escapeHtml(c.label)}
-        </button>`
-      )
-      .join('');
+    if (clearSizeBtn) {
+      clearSizeBtn.hidden = selectedSizes.size === 0;
+    }
+
+    if (diamContainer) {
+      diamContainer.innerHTML = DIAMETER_SIZES.map(
+        (sz) => `<button type="button" class="filter-chip" data-size="${escapeHtml(sz)}" aria-pressed="${selectedSizes.has(sz)}">${escapeHtml(sz)}</button>`
+      ).join('');
+    }
+
+    if (capContainer) {
+      capContainer.innerHTML = CAPACITY_SIZES.map(
+        (sz) => `<button type="button" class="filter-chip" data-size="${escapeHtml(sz)}" aria-pressed="${selectedSizes.has(sz)}">${escapeHtml(sz)}</button>`
+      ).join('');
+    }
+
+    // 3. Brand / Series list (sorted by product count desc, then name)
+    const seriesContainer = document.getElementById('sidebar-series-list');
+    const clearSeriesBtn = document.getElementById('clear-series-filter-btn');
+
+    if (clearSeriesBtn) {
+      clearSeriesBtn.hidden = selectedSeries.size === 0;
+    }
+
+    if (seriesContainer) {
+      const seriesCounts = new Map();
+      const seriesBrand = new Map();
+      for (const p of products) {
+        seriesCounts.set(p.series, (seriesCounts.get(p.series) || 0) + 1);
+        seriesBrand.set(p.series, p.brand);
+      }
+
+      const sortedSeries = Array.from(seriesCounts.entries()).sort((a, b) => {
+        // Put TVS cookware lines first, then sort by count descending
+        const brandA = seriesBrand.get(a[0]) === 'TVS Italy' ? 0 : 1;
+        const brandB = seriesBrand.get(b[0]) === 'TVS Italy' ? 0 : 1;
+        if (brandA !== brandB) return brandA - brandB;
+        return b[1] - a[1] || a[0].localeCompare(b[0], 'vi');
+      });
+
+      seriesContainer.innerHTML = sortedSeries
+        .map(([seriesName, count]) => {
+          const isChecked = selectedSeries.has(seriesName);
+          return `<button type="button" class="series-check-btn" data-series="${escapeHtml(seriesName)}" aria-pressed="${isChecked}">
+            <span class="series-check-indicator">
+              <span class="series-box" aria-hidden="true">✓</span>
+              <span>${escapeHtml(seriesName)}</span>
+            </span>
+            <span class="sidebar-cat-count">${count}</span>
+          </button>`;
+        })
+        .join('');
+    }
+
+    const resetAllBtn = document.getElementById('reset-all-filters-btn');
+    const hasAnyFilter =
+      activeCategory !== 'ALL' ||
+      selectedSizes.size > 0 ||
+      selectedSeries.size > 0 ||
+      onlyInCart ||
+      searchQuery.trim() !== '';
+    if (resetAllBtn) {
+      resetAllBtn.hidden = !hasAnyFilter;
+    }
   }
 
-  function populateSeriesFilter() {
-    const select = document.getElementById('series-filter');
-    if (!select) return;
-    const seriesSet = new Set(products.map((p) => p.series));
-    const sorted = Array.from(seriesSet).sort((a, b) => a.localeCompare(b, 'vi'));
-    select.innerHTML = `<option value="ALL">Tất cả dòng (${sorted.length})</option>` +
-      sorted.map((s) => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
-  }
-
-  function renderCatalogGrid() {
-    const grid = document.getElementById('catalog-grid');
+  function renderActiveFilterTags(filteredCount) {
+    const bar = document.getElementById('active-filters-bar');
+    const tagsEl = document.getElementById('active-filter-tags');
     const countLabel = document.getElementById('showing-count');
-    if (!grid) return;
+
+    if (!bar || !tagsEl) return;
+
+    const tags = [];
+    if (activeCategory !== 'ALL') {
+      tags.push(`<span class="active-tag">Danh mục: ${escapeHtml(activeCategory)} <button type="button" data-clear-type="cat" aria-label="Bỏ lọc danh mục">✕</button></span>`);
+    }
+    for (const sz of selectedSizes) {
+      tags.push(`<span class="active-tag">Size: ${escapeHtml(sz)} <button type="button" data-clear-type="size" data-val="${escapeHtml(sz)}" aria-label="Bỏ lọc size ${escapeHtml(sz)}">✕</button></span>`);
+    }
+    for (const sr of selectedSeries) {
+      tags.push(`<span class="active-tag">Dòng: ${escapeHtml(sr)} <button type="button" data-clear-type="series" data-val="${escapeHtml(sr)}" aria-label="Bỏ lọc dòng ${escapeHtml(sr)}">✕</button></span>`);
+    }
+    if (onlyInCart) {
+      tags.push(`<span class="active-tag">Đang chọn trong giỏ <button type="button" data-clear-type="cart" aria-label="Bỏ lọc giỏ hàng">✕</button></span>`);
+    }
+    if (searchQuery.trim()) {
+      tags.push(`<span class="active-tag">Từ khóa: "${escapeHtml(searchQuery.trim())}" <button type="button" data-clear-type="search" aria-label="Xóa từ khóa">✕</button></span>`);
+    }
+
+    if (tags.length > 0) {
+      tags.push(`<button type="button" class="sidebar-clear-link" data-clear-type="all">Xóa tất cả bộ lọc</button>`);
+    }
+
+    bar.hidden = false;
+    tagsEl.innerHTML = tags.join('');
+    if (countLabel) {
+      countLabel.textContent = `Hiển thị ${filteredCount}/${products.length} mặt hàng`;
+    }
+  }
+
+  function renderProductCardHtml(p, globalCardIndex, rate, ratePercent) {
+    const qty = cart.get(p.code) || 0;
+    const photoIdx = activePhotoIndexByCode.get(p.code) || 0;
+    const imgSrc = getProductImage(p, photoIdx);
+    const hasTwoPhotos = p.images && p.images.length > 1;
+
+    // Follow modern-web-guidance `optimize-image-priority`:
+    // 1st visible image gets fetchpriority="high" (no loading="lazy").
+    // Cards 2-4 omit fetchpriority and loading="lazy" (above the fold).
+    // Cards 5+ get loading="lazy" alone (without fetchpriority="low").
+    let imgPriorityAttrs = '';
+    if (globalCardIndex === 0) {
+      imgPriorityAttrs = 'fetchpriority="high"';
+    } else if (globalCardIndex >= 4) {
+      imgPriorityAttrs = 'loading="lazy"';
+    }
+
+    const stockClass = p.stock > 0 && p.stock <= 15 ? 'stock-pill low-stock' : 'stock-pill';
+    const stockText = p.stock > 0 ? `Kho: ${p.stock}` : 'Hết';
+
+    const effectivePrice = getEffectivePrice(p.price);
+    let priceHtml = '';
+    if (p.price > 0) {
+      if (rate > 0) {
+        priceHtml = `<div class="price-block">
+          <span class="price-value">${formatVND(effectivePrice)}</span>
+          <del class="price-old">${formatVND(p.price)}</del>
+          <span class="discount-badge">-${ratePercent}%</span>
+        </div>`;
+      } else {
+        priceHtml = `<div class="price-block">
+          <span class="price-value">${formatVND(p.price)}</span>
+          <span class="price-unit">/${escapeHtml(p.unit)}</span>
+        </div>`;
+      }
+    } else {
+      priceHtml = `<div class="price-gift">0 ₫ (Tặng kèm)</div>`;
+    }
+
+    const subtotalHtml = formatSubtotalHtml(p, qty);
+
+    return `<article class="product-card ${qty > 0 ? 'in-cart' : ''}" data-code="${p.code}">
+      <img
+        src="${escapeHtml(imgSrc)}"
+        alt="${escapeHtml(p.name)} - #${p.code}"
+        width="400"
+        height="400"
+        ${imgPriorityAttrs}
+        data-action="zoom"
+      />
+      <header>
+        <div class="card-meta-row">
+          <span class="code-badge">#${p.code}</span>
+          <div class="spec-pill-group">
+            <span class="spec-pill series-pill-accent">${escapeHtml(p.series)}</span>
+            ${p.size ? `<span class="spec-pill">${escapeHtml(p.size)}</span>` : ''}
+            ${p.packSpec ? `<span class="spec-pill">${escapeHtml(p.packSpec)}</span>` : ''}
+          </div>
+        </div>
+        <h3>${escapeHtml(p.name)}</h3>
+        ${
+          hasTwoPhotos
+            ? `<div class="photo-tools">
+                <button type="button" class="photo-chip" data-action="switch-photo" data-photo-idx="0" aria-pressed="${photoIdx === 0}">Mặt trước</button>
+                <button type="button" class="photo-chip" data-action="switch-photo" data-photo-idx="1" aria-pressed="${photoIdx === 1}">Mặt sau</button>
+              </div>`
+            : ''
+        }
+      </header>
+      <div class="card-details">
+        <div class="price-stock-row">
+          ${priceHtml}
+          <span class="${stockClass}">${escapeHtml(stockText)}</span>
+        </div>
+        ${p.note ? `<p class="note-callout">📌 ${escapeHtml(p.note)}</p>` : ''}
+      </div>
+      <footer>
+        <div class="qty-control-row">
+          <div class="qty-stepper" role="group" aria-label="Số lượng ${escapeHtml(p.name)}">
+            <button type="button" class="qty-btn" data-action="dec" aria-label="Giảm" ${qty <= 0 ? 'disabled' : ''}>−</button>
+            <input
+              type="number"
+              class="qty-input"
+              min="0"
+              max="${p.stock > 0 ? p.stock : 999}"
+              value="${qty}"
+              aria-label="Số lượng ${escapeHtml(p.name)}"
+            />
+            <button type="button" class="qty-btn" data-action="inc" aria-label="Tăng" ${p.stock > 0 && qty >= p.stock ? 'disabled' : ''}>+</button>
+          </div>
+          <div class="quick-qty-group">
+            ${
+              p.packQty > 1 && p.stock >= p.packQty
+                ? `<button type="button" class="quick-qty-btn" data-action="add-pack" title="Thêm 1 thùng (${p.packQty} ${escapeHtml(p.unit)})">+1 Thùng (${p.packQty})</button>`
+                : ''
+            }
+            ${
+              p.stock > 0
+                ? `<button type="button" class="quick-qty-btn" data-action="take-all" title="Lấy hết tồn kho (${p.stock})">Hết (${p.stock})</button>`
+                : ''
+            }
+          </div>
+        </div>
+        <div class="card-Subtotal-bar">
+          <span class="card-subtotal-text">${subtotalHtml}</span>
+        </div>
+      </footer>
+    </article>`;
+  }
+
+  function renderCatalog() {
+    const contentEl = document.getElementById('catalog-content');
+    if (!contentEl) return;
 
     const list = getFilteredProducts();
-    if (countLabel) {
-      countLabel.textContent = `${list.length}/${products.length} mặt hàng`;
-    }
+    renderSidebar();
+    renderActiveFilterTags(list.length);
 
     if (list.length === 0) {
-      grid.innerHTML = `<div class="empty-state">
-        <p><strong>Không tìm thấy sản phẩm phù hợp.</strong></p>
-        <button type="button" class="btn btn-outline" id="reset-filters-btn">Xóa bộ lọc</button>
+      contentEl.innerHTML = `<div class="empty-state">
+        <p><strong>Không tìm thấy sản phẩm phù hợp với bộ lọc hiện tại.</strong></p>
+        <button type="button" class="btn btn-outline" id="reset-filters-btn">Xóa tất cả bộ lọc</button>
       </div>`;
       const resetBtn = document.getElementById('reset-filters-btn');
       if (resetBtn) {
@@ -331,123 +579,44 @@
 
     const rate = getDiscountRate();
     const ratePercent = Math.round(rate * 100);
+    let globalCardIdx = 0;
 
-    grid.innerHTML = list
-      .map((p, index) => {
-        const qty = cart.get(p.code) || 0;
-        const photoIdx = activePhotoIndexByCode.get(p.code) || 0;
-        const imgSrc = getProductImage(p, photoIdx);
-        const hasTwoPhotos = p.images && p.images.length > 1;
+    // Group into clear Category sections so Chảo, Nồi & Xoong, Lọ, Bình, Cốc, Vung are always separated cleanly
+    const byCategory = new Map();
+    for (const p of list) {
+      if (!byCategory.has(p.category)) {
+        byCategory.set(p.category, []);
+      }
+      byCategory.get(p.category).push(p);
+    }
 
-        // Follow modern-web-guidance `optimize-image-priority`:
-        // 1st visible image gets fetchpriority="high" (no loading="lazy").
-        // Cards 2-4 omit fetchpriority and loading="lazy" (above the fold).
-        // Cards 5+ get loading="lazy" alone (without fetchpriority="low").
-        let imgPriorityAttrs = '';
-        if (index === 0) {
-          imgPriorityAttrs = 'fetchpriority="high"';
-        } else if (index >= 4) {
-          imgPriorityAttrs = 'loading="lazy"';
-        }
+    const sectionsHtml = CATEGORY_META.map((catMeta) => {
+      const items = byCategory.get(catMeta.id);
+      if (!items || items.length === 0) return '';
 
-        const stockClass = p.stock > 0 && p.stock <= 15 ? 'stock-pill low-stock' : 'stock-pill';
-        const stockText = p.stock > 0 ? `Kho: ${p.stock}` : 'Hết';
+      const cardsHtml = items
+        .map((p) => {
+          const html = renderProductCardHtml(p, globalCardIdx, rate, ratePercent);
+          globalCardIdx += 1;
+          return html;
+        })
+        .join('');
 
-        const effectivePrice = getEffectivePrice(p.price);
-        let priceHtml = '';
-        if (p.price > 0) {
-          if (rate > 0) {
-            priceHtml = `<div class="price-block">
-              <span class="price-value">${formatVND(effectivePrice)}</span>
-              <del class="price-old">${formatVND(p.price)}</del>
-              <span class="discount-badge">-${ratePercent}%</span>
-            </div>`;
-          } else {
-            priceHtml = `<div class="price-block">
-              <span class="price-value">${formatVND(p.price)}</span>
-              <span class="price-unit">/${escapeHtml(p.unit)}</span>
-            </div>`;
-          }
-        } else {
-          priceHtml = `<div class="price-gift">0 ₫ (Tặng kèm)</div>`;
-        }
+      return `<section class="category-group" aria-label="${escapeHtml(catMeta.title)}">
+        <div class="category-group-header">
+          <h2 class="category-group-title">
+            <span aria-hidden="true">${catMeta.icon}</span>
+            <span>${escapeHtml(catMeta.title)} (${items.length})</span>
+          </h2>
+          <span class="category-group-subtitle">${escapeHtml(catMeta.subtitle)}</span>
+        </div>
+        <div class="catalog-grid">
+          ${cardsHtml}
+        </div>
+      </section>`;
+    }).join('');
 
-        const subtotalHtml = formatSubtotalHtml(p, qty);
-
-        // Follow modern-web-guidance `card`:
-        // <article class="product-card"> with 4 direct children in source order:
-        // 1. <img> (direct child, never wrapped in .media)
-        // 2. <header>
-        // 3. <div class="card-details">
-        // 4. <footer>
-        return `<article class="product-card ${qty > 0 ? 'in-cart' : ''}" data-code="${p.code}">
-          <img
-            src="${escapeHtml(imgSrc)}"
-            alt="${escapeHtml(p.name)} - #${p.code}"
-            width="400"
-            height="300"
-            ${imgPriorityAttrs}
-            data-action="zoom"
-          />
-          <header>
-            <div class="card-meta-row">
-              <span class="code-badge">#${p.code}</span>
-              <div class="spec-pill-group">
-                ${p.size ? `<span class="spec-pill">${escapeHtml(p.size)}</span>` : ''}
-                ${p.packSpec ? `<span class="spec-pill">${escapeHtml(p.packSpec)}</span>` : ''}
-              </div>
-            </div>
-            <h3>${escapeHtml(p.name)}</h3>
-            ${
-              hasTwoPhotos
-                ? `<div class="photo-tools">
-                    <button type="button" class="photo-chip" data-action="switch-photo" data-photo-idx="0" aria-pressed="${photoIdx === 0}">Mặt trước</button>
-                    <button type="button" class="photo-chip" data-action="switch-photo" data-photo-idx="1" aria-pressed="${photoIdx === 1}">Mặt sau</button>
-                  </div>`
-                : ''
-            }
-          </header>
-          <div class="card-details">
-            <div class="price-stock-row">
-              ${priceHtml}
-              <span class="${stockClass}">${escapeHtml(stockText)}</span>
-            </div>
-            ${p.note ? `<p class="note-callout">📌 ${escapeHtml(p.note)}</p>` : ''}
-          </div>
-          <footer>
-            <div class="qty-control-row">
-              <div class="qty-stepper" role="group" aria-label="Số lượng ${escapeHtml(p.name)}">
-                <button type="button" class="qty-btn" data-action="dec" aria-label="Giảm" ${qty <= 0 ? 'disabled' : ''}>−</button>
-                <input
-                  type="number"
-                  class="qty-input"
-                  min="0"
-                  max="${p.stock > 0 ? p.stock : 999}"
-                  value="${qty}"
-                  aria-label="Số lượng ${escapeHtml(p.name)}"
-                />
-                <button type="button" class="qty-btn" data-action="inc" aria-label="Tăng" ${p.stock > 0 && qty >= p.stock ? 'disabled' : ''}>+</button>
-              </div>
-              <div class="quick-qty-group">
-                ${
-                  p.packQty > 1 && p.stock >= p.packQty
-                    ? `<button type="button" class="quick-qty-btn" data-action="add-pack" title="Thêm 1 thùng (${p.packQty} ${escapeHtml(p.unit)})">+1 Thùng (${p.packQty})</button>`
-                    : ''
-                }
-                ${
-                  p.stock > 0
-                    ? `<button type="button" class="quick-qty-btn" data-action="take-all" title="Lấy hết tồn kho (${p.stock})">Hết (${p.stock})</button>`
-                    : ''
-                }
-              </div>
-            </div>
-            <div class="card-Subtotal-bar">
-              <span class="card-subtotal-text">${subtotalHtml}</span>
-            </div>
-          </footer>
-        </article>`;
-      })
-      .join('');
+    contentEl.innerHTML = sectionsHtml;
   }
 
   function calculateTotals() {
@@ -750,16 +919,14 @@
 
   function resetFilters() {
     activeCategory = 'ALL';
-    activeSeries = 'ALL';
+    selectedSizes.clear();
+    selectedSeries.clear();
     searchQuery = '';
     onlyInCart = false;
     const searchInput = document.getElementById('search-input');
     if (searchInput) searchInput.value = '';
-    const seriesSelect = document.getElementById('series-filter');
-    if (seriesSelect) seriesSelect.value = 'ALL';
-    renderCategoryTabs();
     updateCartSummaryUI();
-    renderCatalogGrid();
+    renderCatalog();
   }
 
   let toastTimer = null;
@@ -795,9 +962,7 @@
 
   function init() {
     syncPromoUI();
-    renderCategoryTabs();
-    populateSeriesFilter();
-    renderCatalogGrid();
+    renderCatalog();
     updateCartSummaryUI();
 
     // Restore buyer inputs
@@ -846,20 +1011,105 @@
       });
     }
 
-    // Search & Filters
+    // Mobile sidebar toggle
+    const mobileToggleBtn = document.getElementById('mobile-filter-toggle-btn');
+    const sidebarEl = document.getElementById('catalog-sidebar');
+    if (mobileToggleBtn && sidebarEl) {
+      mobileToggleBtn.addEventListener('click', () => {
+        const isOpen = sidebarEl.classList.toggle('is-open');
+        mobileToggleBtn.setAttribute('aria-expanded', String(isOpen));
+      });
+    }
+
+    // Sidebar interactions (Category, Size, Series)
+    if (sidebarEl) {
+      sidebarEl.addEventListener('click', (e) => {
+        const catBtn = e.target.closest('[data-cat]');
+        if (catBtn) {
+          activeCategory = catBtn.dataset.cat || 'ALL';
+          renderCatalog();
+          return;
+        }
+
+        const sizeBtn = e.target.closest('[data-size]');
+        if (sizeBtn) {
+          const sz = sizeBtn.dataset.size;
+          if (selectedSizes.has(sz)) {
+            selectedSizes.delete(sz);
+          } else {
+            selectedSizes.add(sz);
+          }
+          renderCatalog();
+          return;
+        }
+
+        const seriesBtn = e.target.closest('[data-series]');
+        if (seriesBtn) {
+          const sr = seriesBtn.dataset.series;
+          if (selectedSeries.has(sr)) {
+            selectedSeries.delete(sr);
+          } else {
+            selectedSeries.add(sr);
+          }
+          renderCatalog();
+          return;
+        }
+      });
+    }
+
+    const clearSizeBtn = document.getElementById('clear-size-filter-btn');
+    if (clearSizeBtn) {
+      clearSizeBtn.addEventListener('click', () => {
+        selectedSizes.clear();
+        renderCatalog();
+      });
+    }
+
+    const clearSeriesBtn = document.getElementById('clear-series-filter-btn');
+    if (clearSeriesBtn) {
+      clearSeriesBtn.addEventListener('click', () => {
+        selectedSeries.clear();
+        renderCatalog();
+      });
+    }
+
+    const resetAllBtn = document.getElementById('reset-all-filters-btn');
+    if (resetAllBtn) {
+      resetAllBtn.addEventListener('click', resetFilters);
+    }
+
+    // Active filter tags bar removal
+    const activeTagsEl = document.getElementById('active-filter-tags');
+    if (activeTagsEl) {
+      activeTagsEl.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-clear-type]');
+        if (!btn) return;
+        const type = btn.dataset.clearType;
+        const val = btn.dataset.val;
+        if (type === 'cat') activeCategory = 'ALL';
+        else if (type === 'size') selectedSizes.delete(val);
+        else if (type === 'series') selectedSeries.delete(val);
+        else if (type === 'cart') {
+          onlyInCart = false;
+          updateCartSummaryUI();
+        } else if (type === 'search') {
+          searchQuery = '';
+          const searchInput = document.getElementById('search-input');
+          if (searchInput) searchInput.value = '';
+        } else if (type === 'all') {
+          resetFilters();
+          return;
+        }
+        renderCatalog();
+      });
+    }
+
+    // Search & Sort
     const searchInput = document.getElementById('search-input');
     if (searchInput) {
       searchInput.addEventListener('input', (e) => {
         searchQuery = e.target.value;
-        renderCatalogGrid();
-      });
-    }
-
-    const seriesSelect = document.getElementById('series-filter');
-    if (seriesSelect) {
-      seriesSelect.addEventListener('change', (e) => {
-        activeSeries = e.target.value;
-        renderCatalogGrid();
+        renderCatalog();
       });
     }
 
@@ -867,18 +1117,7 @@
     if (sortSelect) {
       sortSelect.addEventListener('change', (e) => {
         sortBy = e.target.value;
-        renderCatalogGrid();
-      });
-    }
-
-    const catTabs = document.getElementById('category-tabs');
-    if (catTabs) {
-      catTabs.addEventListener('click', (e) => {
-        const btn = e.target.closest('.cat-tab');
-        if (!btn) return;
-        activeCategory = btn.dataset.cat || 'ALL';
-        renderCategoryTabs();
-        renderCatalogGrid();
+        renderCatalog();
       });
     }
 
@@ -887,14 +1126,14 @@
       onlyCartBtn.addEventListener('click', () => {
         onlyInCart = !onlyInCart;
         updateCartSummaryUI();
-        renderCatalogGrid();
+        renderCatalog();
       });
     }
 
-    // Delegated events on Catalog Grid
-    const grid = document.getElementById('catalog-grid');
-    if (grid) {
-      grid.addEventListener('click', (e) => {
+    // Delegated events on Catalog Content
+    const contentEl = document.getElementById('catalog-content');
+    if (contentEl) {
+      contentEl.addEventListener('click', (e) => {
         const card = e.target.closest('.product-card');
         if (!card) return;
         const code = Number(card.dataset.code);
@@ -927,7 +1166,7 @@
         }
       });
 
-      grid.addEventListener('change', (e) => {
+      contentEl.addEventListener('change', (e) => {
         if (!e.target.classList.contains('qty-input')) return;
         const card = e.target.closest('.product-card');
         if (!card) return;
@@ -976,7 +1215,7 @@
         if (cart.size === 0) return;
         cart.clear();
         saveCart();
-        renderCatalogGrid();
+        renderCatalog();
         updateCartSummaryUI();
         renderCartModalContent();
         showToast('Đã xóa giỏ hàng.');

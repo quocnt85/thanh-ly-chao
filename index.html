@@ -31,67 +31,109 @@
     </div>
   </header>
 
-  <main class="main-container">
-    <!-- Search, Filter & Promo Code Toolbar -->
-    <section class="catalog-toolbar" aria-label="Bộ lọc và tìm kiếm sản phẩm">
-      <div class="toolbar-top">
-        <div class="search-box">
-          <span class="search-icon" aria-hidden="true">🔎</span>
-          <input
-            type="search"
-            id="search-input"
-            name="q"
-            placeholder="Tìm tên, mã (#1, #25), kích thước (ø20cm)..."
-            aria-label="Tìm kiếm sản phẩm"
-            autocorrect="off"
-            autocapitalize="off"
-            spellcheck="false"
-          />
+  <div class="page-shell">
+    <!-- Left Sidebar for Category, Size & Brand/Series Filtering -->
+    <aside class="catalog-sidebar" id="catalog-sidebar" aria-label="Bộ lọc danh mục, kích thước và thương hiệu">
+      <div class="sidebar-header-mobile">
+        <strong>Bộ lọc sản phẩm</strong>
+        <button type="button" class="btn btn-ghost btn-sm" id="reset-all-filters-btn" hidden>Xóa lọc</button>
+      </div>
+
+      <!-- 1. Category Filter -->
+      <section class="sidebar-section">
+        <div class="sidebar-section-header">
+          <h2 class="sidebar-title">📂 Danh mục sản phẩm</h2>
+        </div>
+        <div class="sidebar-cat-list" id="sidebar-category-list" role="navigation" aria-label="Danh mục mặt hàng"></div>
+      </section>
+
+      <!-- 2. Size / Capacity Filter -->
+      <section class="sidebar-section">
+        <div class="sidebar-section-header">
+          <h2 class="sidebar-title">📏 Kích thước / Dung tích</h2>
+          <button type="button" class="sidebar-clear-link" id="clear-size-filter-btn" hidden>Bỏ chọn</button>
+        </div>
+        <div class="sidebar-sub-label">Đường kính (Chảo / Nồi / Vung)</div>
+        <div class="sidebar-chip-grid" id="sidebar-size-diameter"></div>
+        <div class="sidebar-sub-label">Dung tích (Bình / Lọ / Cốc)</div>
+        <div class="sidebar-chip-grid" id="sidebar-size-capacity"></div>
+      </section>
+
+      <!-- 3. Brand / Series Filter -->
+      <section class="sidebar-section">
+        <div class="sidebar-section-header">
+          <h2 class="sidebar-title">🏷️ Dòng / Thương hiệu</h2>
+          <button type="button" class="sidebar-clear-link" id="clear-series-filter-btn" hidden>Bỏ chọn</button>
+        </div>
+        <div class="sidebar-series-list" id="sidebar-series-list"></div>
+      </section>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-container">
+      <!-- Search, Sort & Promo Code Toolbar -->
+      <section class="catalog-toolbar" aria-label="Tìm kiếm, sắp xếp và mã giảm giá">
+        <div class="toolbar-top">
+          <button type="button" class="btn btn-outline mobile-filter-toggle" id="mobile-filter-toggle-btn" aria-expanded="false" aria-controls="catalog-sidebar">
+            🌪️ Bộ lọc
+          </button>
+
+          <div class="search-box">
+            <span class="search-icon" aria-hidden="true">🔎</span>
+            <input
+              type="search"
+              id="search-input"
+              name="q"
+              placeholder="Tìm tên sản phẩm, mã (#1, #25), kích thước (ø20cm)..."
+              aria-label="Tìm kiếm sản phẩm"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
+            />
+          </div>
+
+          <select id="sort-select" class="filter-select" aria-label="Sắp xếp sản phẩm">
+            <option value="category-asc">Sắp xếp: Theo danh mục &amp; dòng SP</option>
+            <option value="size-asc">Kích thước: Nhỏ → Lớn</option>
+            <option value="price-asc">Giá: Thấp → Cao</option>
+            <option value="price-desc">Giá: Cao → Thấp</option>
+            <option value="stock-desc">Tồn kho: Nhiều → Ít</option>
+            <option value="code-asc">Mã báo giá (#1 → #110)</option>
+          </select>
+
+          <button type="button" class="btn btn-outline" id="toggle-only-cart-btn" aria-pressed="false">
+            Đã chọn (0)
+          </button>
+
+          <form id="promo-form" class="promo-form" action="#" method="GET" novalidate>
+            <label for="promo-code-input" class="promo-label">🏷️ Mã giảm:</label>
+            <input
+              type="text"
+              id="promo-code-input"
+              name="promoCode"
+              placeholder="Nhập mã..."
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
+              enterkeyhint="done"
+              aria-describedby="promo-status"
+            />
+            <button type="submit" class="btn btn-primary btn-sm" id="promo-submit-btn">Áp dụng</button>
+            <button type="button" class="btn btn-ghost btn-sm" id="promo-clear-btn" hidden aria-label="Xóa mã giảm giá">✕</button>
+            <span id="promo-status" class="promo-status" role="status" aria-live="polite"></span>
+          </form>
         </div>
 
-        <select id="series-filter" class="filter-select" aria-label="Lọc theo dòng sản phẩm">
-          <option value="ALL">Tất cả dòng</option>
-        </select>
+        <div class="active-filters-bar" id="active-filters-bar" hidden>
+          <div class="active-filter-tags" id="active-filter-tags"></div>
+          <span id="showing-count" class="showing-count"></span>
+        </div>
+      </section>
 
-        <select id="sort-select" class="filter-select" aria-label="Sắp xếp sản phẩm">
-          <option value="code-asc">Mã: Tăng dần</option>
-          <option value="price-asc">Giá: Thấp → Cao</option>
-          <option value="price-desc">Giá: Cao → Thấp</option>
-          <option value="stock-desc">Tồn: Nhiều → Ít</option>
-        </select>
-
-        <button type="button" class="btn btn-outline" id="toggle-only-cart-btn" aria-pressed="false">
-          Đã chọn (0)
-        </button>
-
-        <form id="promo-form" class="promo-form" action="#" method="GET" novalidate>
-          <label for="promo-code-input" class="promo-label">🏷️ Mã giảm:</label>
-          <input
-            type="text"
-            id="promo-code-input"
-            name="promoCode"
-            placeholder="Nhập mã..."
-            autocorrect="off"
-            autocapitalize="off"
-            spellcheck="false"
-            enterkeyhint="done"
-            aria-describedby="promo-status"
-          />
-          <button type="submit" class="btn btn-primary btn-sm" id="promo-submit-btn">Áp dụng</button>
-          <button type="button" class="btn btn-ghost btn-sm" id="promo-clear-btn" hidden aria-label="Xóa mã giảm giá">✕</button>
-          <span id="promo-status" class="promo-status" role="status" aria-live="polite"></span>
-        </form>
-      </div>
-
-      <div class="category-tabs-row">
-        <div class="category-tabs" id="category-tabs" role="toolbar" aria-label="Danh mục mặt hàng"></div>
-        <span id="showing-count" class="showing-count"></span>
-      </div>
-    </section>
-
-    <!-- Product Grid -->
-    <section id="catalog-grid" class="catalog-grid" aria-label="Danh sách sản phẩm thanh lý"></section>
-  </main>
+      <!-- Grouped Product Sections / Grid -->
+      <div id="catalog-content" class="catalog-content" aria-label="Danh sách sản phẩm thanh lý"></div>
+    </main>
+  </div>
 
   <!-- Sticky Bottom Bar when items are in Cart -->
   <aside id="sticky-cart-bar" class="sticky-cart-bar" hidden aria-label="Tóm tắt đơn hàng đang chọn">
