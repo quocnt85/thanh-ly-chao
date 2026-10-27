@@ -11,10 +11,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Chảo chống dính Ý",
     "brand": "TVS Italy",
     "series": "Blackbeauty",
-    "size": "Đường kính Ø20cm",
-    "features": [
-      "Chống dính cao cấp TVS Italy"
-    ],
+    "size": "ø20cm",
+    "features": [],
     "images": [
       "images/img_001_01_front.jpg"
     ],
@@ -33,10 +31,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Chảo chống dính Ý",
     "brand": "TVS Italy",
     "series": "Blackbeauty",
-    "size": "Đường kính Ø24cm",
-    "features": [
-      "Chống dính cao cấp TVS Italy"
-    ],
+    "size": "ø24cm",
+    "features": [],
     "images": [
       "images/img_001_01_front.jpg"
     ],
@@ -55,10 +51,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Nồi & Xoong Ý",
     "brand": "TVS Italy",
     "series": "Blackstone",
-    "size": "Đường kính Ø14cm",
-    "features": [
-      "Chống dính cao cấp TVS Italy"
-    ],
+    "size": "ø14cm",
+    "features": [],
     "images": [
       "images/img_006_43_front.jpg",
       "images/img_006_44_back.jpg"
@@ -78,10 +72,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Chảo chống dính Ý",
     "brand": "TVS Italy",
     "series": "Blackstone",
-    "size": "Đường kính Ø16cm",
-    "features": [
-      "Chống dính cao cấp TVS Italy"
-    ],
+    "size": "ø16cm",
+    "features": [],
     "images": [
       "images/img_007_45_front.jpg",
       "images/img_007_46_back.jpg"
@@ -101,10 +93,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Chảo chống dính Ý",
     "brand": "TVS Italy",
     "series": "Blackstone",
-    "size": "Đường kính Ø18cm",
-    "features": [
-      "Chống dính cao cấp TVS Italy"
-    ],
+    "size": "ø18cm",
+    "features": [],
     "images": [
       "images/img_007_45_front.jpg",
       "images/img_007_46_back.jpg"
@@ -124,10 +114,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Chảo chống dính Ý",
     "brand": "TVS Italy",
     "series": "Blackstone",
-    "size": "Đường kính Ø20cm",
-    "features": [
-      "Chống dính cao cấp TVS Italy"
-    ],
+    "size": "ø20cm",
+    "features": [],
     "images": [
       "images/img_007_45_front.jpg",
       "images/img_007_46_back.jpg"
@@ -147,10 +135,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Chảo chống dính Ý",
     "brand": "TVS Italy",
     "series": "Blackstone",
-    "size": "Đường kính Ø22cm",
-    "features": [
-      "Chống dính cao cấp TVS Italy"
-    ],
+    "size": "ø22cm",
+    "features": [],
     "images": [
       "images/img_011_09_front.jpg",
       "images/img_011_10_back.jpg"
@@ -170,10 +156,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Chảo chống dính Ý",
     "brand": "TVS Italy",
     "series": "Blackstone",
-    "size": "Đường kính Ø24cm",
-    "features": [
-      "Chống dính cao cấp TVS Italy"
-    ],
+    "size": "ø24cm",
+    "features": [],
     "images": [
       "images/img_011_09_front.jpg",
       "images/img_011_10_back.jpg"
@@ -193,10 +177,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Chảo chống dính Ý",
     "brand": "TVS Italy",
     "series": "Blackstone",
-    "size": "Đường kính Ø26cm",
-    "features": [
-      "Chống dính cao cấp TVS Italy"
-    ],
+    "size": "ø26cm",
+    "features": [],
     "images": [
       "images/img_011_09_front.jpg",
       "images/img_011_10_back.jpg"
@@ -216,11 +198,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Nồi & Xoong Ý",
     "brand": "TVS Italy",
     "series": "Blackstone",
-    "size": "Đường kính Ø20cm",
-    "features": [
-      "Kèm vung kính",
-      "Chống dính cao cấp TVS Italy"
-    ],
+    "size": "ø20cm",
+    "features": [],
     "images": [
       "images/img_013_11_front.jpg",
       "images/img_013_12_back.jpg"
@@ -240,11 +219,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Nồi & Xoong Ý",
     "brand": "TVS Italy",
     "series": "Blackstone",
-    "size": "Đường kính Ø24cm",
-    "features": [
-      "Kèm vung kính",
-      "Chống dính cao cấp TVS Italy"
-    ],
+    "size": "ø24cm",
+    "features": [],
     "images": [
       "images/img_013_11_front.jpg",
       "images/img_013_12_back.jpg"
@@ -264,11 +240,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Nồi & Xoong Ý",
     "brand": "TVS Italy",
     "series": "Turtle",
-    "size": "Đường kính Ø20cm",
-    "features": [
-      "Kèm vung kính",
-      "Chống dính cao cấp TVS Italy"
-    ],
+    "size": "ø20cm",
+    "features": [],
     "images": [
       "images/img_016_13_front.jpg",
       "images/img_016_14_back.jpg"
@@ -289,11 +262,7 @@ window.CATALOG_PRODUCTS = [
     "brand": "TVS Italy",
     "series": "Turtle",
     "size": "",
-    "features": [
-      "Kèm vung kính",
-      "Thiết kế 2 quai cầm",
-      "Chống dính cao cấp TVS Italy"
-    ],
+    "features": [],
     "images": [
       "images/img_019_15_front.jpg"
     ],
@@ -312,11 +281,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Chảo chống dính Ý",
     "brand": "TVS Italy",
     "series": "Turtle",
-    "size": "Đường kính Ø24cm",
-    "features": [
-      "Chảo đôi 2 mặt",
-      "Chống dính cao cấp TVS Italy"
-    ],
+    "size": "ø24cm",
+    "features": [],
     "images": [
       "images/img_020_16_front.jpeg"
     ],
@@ -335,10 +301,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Chảo chống dính Ý",
     "brand": "TVS Italy",
     "series": "Turtle",
-    "size": "Đường kính Ø20cm",
-    "features": [
-      "Chống dính cao cấp TVS Italy"
-    ],
+    "size": "ø20cm",
+    "features": [],
     "images": [
       "images/img_021_17_front.jpeg"
     ],
@@ -357,10 +321,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Chảo chống dính Ý",
     "brand": "TVS Italy",
     "series": "Velvet",
-    "size": "Đường kính Ø18cm",
-    "features": [
-      "Chống dính cao cấp TVS Italy"
-    ],
+    "size": "ø18cm",
+    "features": [],
     "images": [
       "images/img_025_18_front.jpeg",
       "images/img_025_19_back.jpeg"
@@ -380,10 +342,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Chảo chống dính Ý",
     "brand": "TVS Italy",
     "series": "Velvet",
-    "size": "Đường kính Ø20cm",
-    "features": [
-      "Chống dính cao cấp TVS Italy"
-    ],
+    "size": "ø20cm",
+    "features": [],
     "images": [
       "images/img_025_18_front.jpeg",
       "images/img_025_19_back.jpeg"
@@ -403,10 +363,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Chảo chống dính Ý",
     "brand": "TVS Italy",
     "series": "Velvet",
-    "size": "Đường kính Ø24cm",
-    "features": [
-      "Chống dính cao cấp TVS Italy"
-    ],
+    "size": "ø24cm",
+    "features": [],
     "images": [
       "images/img_028_20_front.jpeg",
       "images/img_028_21_back.jpeg"
@@ -426,10 +384,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Chảo chống dính Ý",
     "brand": "TVS Italy",
     "series": "Velvet",
-    "size": "Đường kính Ø26cm",
-    "features": [
-      "Chống dính cao cấp TVS Italy"
-    ],
+    "size": "ø26cm",
+    "features": [],
     "images": [
       "images/img_028_20_front.jpeg",
       "images/img_028_21_back.jpeg"
@@ -449,10 +405,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Chảo chống dính Ý",
     "brand": "TVS Italy",
     "series": "Velvet",
-    "size": "Đường kính Ø28cm",
-    "features": [
-      "Chống dính cao cấp TVS Italy"
-    ],
+    "size": "ø28cm",
+    "features": [],
     "images": [
       "images/img_028_20_front.jpeg",
       "images/img_028_21_back.jpeg"
@@ -472,10 +426,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Nồi & Xoong Ý",
     "brand": "TVS Italy",
     "series": "Velvet",
-    "size": "Đường kính Ø14cm",
-    "features": [
-      "Chống dính cao cấp TVS Italy"
-    ],
+    "size": "ø14cm",
+    "features": [],
     "images": [
       "images/img_030_22_front.jpeg",
       "images/img_030_23_back.jpeg"
@@ -495,10 +447,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Nồi & Xoong Ý",
     "brand": "TVS Italy",
     "series": "Velvet",
-    "size": "Đường kính Ø22cm",
-    "features": [
-      "Chống dính cao cấp TVS Italy"
-    ],
+    "size": "ø22cm",
+    "features": [],
     "images": [
       "images/img_036_25_front.jpeg",
       "images/img_036_24_back.jpeg"
@@ -518,7 +468,7 @@ window.CATALOG_PRODUCTS = [
     "category": "Vung kính",
     "brand": "TVS Italy",
     "series": "Velvet",
-    "size": "Đường kính Ø22cm",
+    "size": "ø22cm",
     "features": [],
     "images": [
       "images/img_036_25_front.jpeg",
@@ -539,10 +489,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Nồi & Xoong Ý",
     "brand": "TVS Italy",
     "series": "Velvet",
-    "size": "Đường kính Ø24cm",
-    "features": [
-      "Chống dính cao cấp TVS Italy"
-    ],
+    "size": "ø24cm",
+    "features": [],
     "images": [
       "images/img_036_25_front.jpeg",
       "images/img_036_24_back.jpeg"
@@ -562,7 +510,7 @@ window.CATALOG_PRODUCTS = [
     "category": "Vung kính",
     "brand": "TVS Italy",
     "series": "Velvet",
-    "size": "Đường kính Ø24cm",
+    "size": "ø24cm",
     "features": [],
     "images": [
       "images/img_036_25_front.jpeg",
@@ -583,10 +531,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Nồi & Xoong Ý",
     "brand": "TVS Italy",
     "series": "Basilico",
-    "size": "Đường kính Ø16cm",
-    "features": [
-      "Chống dính cao cấp TVS Italy"
-    ],
+    "size": "ø16cm",
+    "features": [],
     "images": [
       "images/img_038_26_front.jpeg",
       "images/img_038_27_back.jpeg"
@@ -606,10 +552,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Chảo chống dính Ý",
     "brand": "TVS Italy",
     "series": "Basilico",
-    "size": "Đường kính Ø20cm",
-    "features": [
-      "Chống dính cao cấp TVS Italy"
-    ],
+    "size": "ø20cm",
+    "features": [],
     "images": [
       "images/img_039_28_front.jpeg"
     ],
@@ -628,10 +572,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Chảo chống dính Ý",
     "brand": "TVS Italy",
     "series": "Basilico",
-    "size": "Đường kính Ø24cm",
-    "features": [
-      "Chống dính cao cấp TVS Italy"
-    ],
+    "size": "ø24cm",
+    "features": [],
     "images": [
       "images/img_039_28_front.jpeg"
     ],
@@ -650,10 +592,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Chảo chống dính Ý",
     "brand": "TVS Italy",
     "series": "Basilico",
-    "size": "Đường kính Ø26cm",
-    "features": [
-      "Chống dính cao cấp TVS Italy"
-    ],
+    "size": "ø26cm",
+    "features": [],
     "images": [
       "images/img_039_28_front.jpeg"
     ],
@@ -672,10 +612,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Chảo chống dính Ý",
     "brand": "TVS Italy",
     "series": "Basilico",
-    "size": "Đường kính Ø28cm",
-    "features": [
-      "Chống dính cao cấp TVS Italy"
-    ],
+    "size": "ø28cm",
+    "features": [],
     "images": [
       "images/img_039_28_front.jpeg"
     ],
@@ -694,10 +632,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Nồi & Xoong Ý",
     "brand": "TVS Italy",
     "series": "Ecochic",
-    "size": "Đường kính Ø20cm",
-    "features": [
-      "Chống dính cao cấp TVS Italy"
-    ],
+    "size": "ø20cm",
+    "features": [],
     "images": [
       "images/img_045_30_front.jpeg",
       "images/img_045_29_back.jpeg"
@@ -717,7 +653,7 @@ window.CATALOG_PRODUCTS = [
     "category": "Vung kính",
     "brand": "TVS Italy",
     "series": "Ecochic",
-    "size": "Đường kính Ø20cm",
+    "size": "ø20cm",
     "features": [],
     "images": [
       "images/img_045_30_front.jpeg",
@@ -738,10 +674,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Nồi & Xoong Ý",
     "brand": "TVS Italy",
     "series": "Nuvola",
-    "size": "Đường kính Ø20cm",
-    "features": [
-      "Lòng phủ gốm Ceramic cao cấp"
-    ],
+    "size": "ø20cm",
+    "features": [],
     "images": [
       "images/img_049_31_front.jpeg",
       "images/img_049_32_back.jpeg"
@@ -761,7 +695,7 @@ window.CATALOG_PRODUCTS = [
     "category": "Vung kính",
     "brand": "TVS Italy",
     "series": "Nuvola",
-    "size": "Đường kính Ø20cm",
+    "size": "ø20cm",
     "features": [],
     "images": [
       "images/img_049_31_front.jpeg",
@@ -782,10 +716,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Chảo chống dính Ý",
     "brand": "TVS Italy",
     "series": "Easy Pretty",
-    "size": "Đường kính Ø20cm",
-    "features": [
-      "Chống dính cao cấp TVS Italy"
-    ],
+    "size": "ø20cm",
+    "features": [],
     "images": [
       "images/img_051_34_front.jpeg",
       "images/img_051_33_back.jpeg"
@@ -805,10 +737,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Chảo chống dính Ý",
     "brand": "TVS Italy",
     "series": "Mezzogiorno",
-    "size": "Đường kính Ø20cm",
-    "features": [
-      "Lòng phủ gốm Ceramic cao cấp"
-    ],
+    "size": "ø20cm",
+    "features": [],
     "images": [
       "images/img_053_38_front.jpeg",
       "images/img_053_37_back.jpeg"
@@ -828,10 +758,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Chảo chống dính Ý",
     "brand": "TVS Italy",
     "series": "Mezzogiorno",
-    "size": "Đường kính Ø26cm",
-    "features": [
-      "Chống dính cao cấp TVS Italy"
-    ],
+    "size": "ø26cm",
+    "features": [],
     "images": [
       "images/img_053_38_front.jpeg",
       "images/img_053_37_back.jpeg"
@@ -851,7 +779,7 @@ window.CATALOG_PRODUCTS = [
     "category": "Vung kính",
     "brand": "TVS Italy",
     "series": "Mezzogiorno",
-    "size": "Đường kính Ø16cm",
+    "size": "ø16cm",
     "features": [],
     "images": [
       "images/img_055_40_front.jpeg",
@@ -872,10 +800,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Nồi & Xoong Ý",
     "brand": "TVS Italy",
     "series": "Mezzogiorno",
-    "size": "Đường kính Ø20cm",
-    "features": [
-      "Lòng phủ gốm Ceramic cao cấp"
-    ],
+    "size": "ø20cm",
+    "features": [],
     "images": [
       "images/img_057_42_front.jpeg",
       "images/img_057_41_back.jpeg"
@@ -895,7 +821,7 @@ window.CATALOG_PRODUCTS = [
     "category": "Vung kính",
     "brand": "TVS Italy",
     "series": "Mezzogiorno",
-    "size": "Đường kính Ø20cm",
+    "size": "ø20cm",
     "features": [],
     "images": [
       "images/img_057_42_front.jpeg",
@@ -916,7 +842,7 @@ window.CATALOG_PRODUCTS = [
     "category": "Vung kính",
     "brand": "TVS Italy",
     "series": "Isotta",
-    "size": "Đường kính Ø16cm",
+    "size": "ø16cm",
     "features": [],
     "images": [],
     "isVariantImage": false,
@@ -934,7 +860,7 @@ window.CATALOG_PRODUCTS = [
     "category": "Vung kính",
     "brand": "TVS Italy",
     "series": "Sofia",
-    "size": "Đường kính Ø20cm",
+    "size": "ø20cm",
     "features": [],
     "images": [
       "images/img_045_30_front.jpeg",
@@ -955,7 +881,7 @@ window.CATALOG_PRODUCTS = [
     "category": "Vung kính",
     "brand": "TVS Italy",
     "series": "Sofia",
-    "size": "Đường kính Ø24cm",
+    "size": "ø24cm",
     "features": [],
     "images": [],
     "isVariantImage": false,
@@ -973,7 +899,7 @@ window.CATALOG_PRODUCTS = [
     "category": "Bình giữ nhiệt",
     "brand": "Nhập khẩu Ý",
     "series": "Igloo",
-    "size": "Dung tích 0.5L",
+    "size": "0.5L",
     "features": [],
     "images": [
       "images/img_095_47_front.jpeg"
@@ -993,7 +919,7 @@ window.CATALOG_PRODUCTS = [
     "category": "Bình giữ nhiệt",
     "brand": "Nhập khẩu Ý",
     "series": "Venezia",
-    "size": "Dung tích 1.5L",
+    "size": "1.5L",
     "features": [],
     "images": [
       "images/img_097_48_front.jpeg"
@@ -1013,7 +939,7 @@ window.CATALOG_PRODUCTS = [
     "category": "Bình giữ nhiệt",
     "brand": "Nhập khẩu Ý",
     "series": "Artic",
-    "size": "Dung tích 2.8L",
+    "size": "2.8L",
     "features": [],
     "images": [
       "images/img_098_49_front.jpeg"
@@ -1033,10 +959,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Lọ & Hũ thủy tinh",
     "brand": "Borgonovo Italy",
     "series": "Prim",
-    "size": "Dung tích 4.25L",
-    "features": [
-      "Thủy tinh Ý không chì an toàn"
-    ],
+    "size": "4.25L",
+    "features": [],
     "images": [
       "images/img_099_50_front.jpeg"
     ],
@@ -1055,10 +979,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Lọ & Hũ thủy tinh",
     "brand": "Borgonovo Italy",
     "series": "Prim",
-    "size": "Dung tích 3.1L",
-    "features": [
-      "Thủy tinh Ý không chì an toàn"
-    ],
+    "size": "3.1L",
+    "features": [],
     "images": [
       "images/img_100_02_front.jpeg"
     ],
@@ -1077,10 +999,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Lọ & Hũ thủy tinh",
     "brand": "Borgonovo Italy",
     "series": "Prim",
-    "size": "Dung tích 2L",
-    "features": [
-      "Thủy tinh Ý không chì an toàn"
-    ],
+    "size": "2L",
+    "features": [],
     "images": [
       "images/img_100_02_front.jpeg"
     ],
@@ -1099,10 +1019,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Lọ & Hũ thủy tinh",
     "brand": "Borgonovo Italy",
     "series": "Prim",
-    "size": "Dung tích 1L",
-    "features": [
-      "Thủy tinh Ý không chì an toàn"
-    ],
+    "size": "1L",
+    "features": [],
     "images": [
       "images/img_100_02_front.jpeg"
     ],
@@ -1121,10 +1039,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Lọ & Hũ thủy tinh",
     "brand": "Borgonovo Italy",
     "series": "Cucina",
-    "size": "Dung tích 1L",
-    "features": [
-      "Thủy tinh Ý không chì an toàn"
-    ],
+    "size": "1L",
+    "features": [],
     "images": [
       "images/img_103_03_front.jpeg"
     ],
@@ -1143,10 +1059,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Lọ & Hũ thủy tinh",
     "brand": "Borgonovo Italy",
     "series": "Terrine",
-    "size": "Dung tích 0.5L",
-    "features": [
-      "Thủy tinh Ý không chì an toàn"
-    ],
+    "size": "0.5L",
+    "features": [],
     "images": [
       "images/img_104_04_front.jpeg"
     ],
@@ -1165,10 +1079,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Lọ & Hũ thủy tinh",
     "brand": "Borgonovo Italy",
     "series": "Terrine",
-    "size": "Dung tích 1L",
-    "features": [
-      "Thủy tinh Ý không chì an toàn"
-    ],
+    "size": "1L",
+    "features": [],
     "images": [
       "images/img_105_05_front.jpeg"
     ],
@@ -1187,10 +1099,8 @@ window.CATALOG_PRODUCTS = [
     "category": "Bộ cốc & Ly thủy tinh",
     "brand": "Borgonovo Italy",
     "series": "Palladio",
-    "size": "Dung tích 420ml",
-    "features": [
-      "Thủy tinh Ý không chì an toàn"
-    ],
+    "size": "420ml",
+    "features": [],
     "images": [
       "images/img_106_06_front.jpeg"
     ],
@@ -1210,9 +1120,7 @@ window.CATALOG_PRODUCTS = [
     "brand": "Borgonovo Italy",
     "series": "Ducale",
     "size": "",
-    "features": [
-      "Thủy tinh Ý không chì an toàn"
-    ],
+    "features": [],
     "images": [],
     "isVariantImage": false,
     "isGiftOrZeroPrice": false
@@ -1230,9 +1138,7 @@ window.CATALOG_PRODUCTS = [
     "brand": "Borgonovo Italy",
     "series": "Excalibur",
     "size": "",
-    "features": [
-      "Thủy tinh Ý không chì an toàn"
-    ],
+    "features": [],
     "images": [
       "images/img_108_07_front.jpeg"
     ],
@@ -1252,9 +1158,7 @@ window.CATALOG_PRODUCTS = [
     "brand": "Borgonovo Italy",
     "series": "Gia dụng Ý",
     "size": "",
-    "features": [
-      "Thủy tinh Ý không chì an toàn"
-    ],
+    "features": [],
     "images": [
       "images/img_109_08_front.jpeg"
     ],
@@ -1274,9 +1178,7 @@ window.CATALOG_PRODUCTS = [
     "brand": "Borgonovo Italy",
     "series": "Bibita",
     "size": "",
-    "features": [
-      "Thủy tinh Ý không chì an toàn"
-    ],
+    "features": [],
     "images": [],
     "isVariantImage": false,
     "isGiftOrZeroPrice": true

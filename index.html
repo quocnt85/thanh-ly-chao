@@ -13,48 +13,26 @@
       <div class="brand-block">
         <div class="brand-badge" aria-hidden="true">IT</div>
         <div>
-          <h1 class="brand-title">Catalog Thanh Lý Hàng Gia Dụng Ý</h1>
-          <p class="brand-subtitle">Chảo &amp; Nồi TVS Italy • Thủy tinh không chì Borgonovo Italy • Đặt hàng nhanh &amp; Xuất Excel</p>
+          <h1 class="brand-title">Thanh Lý Gia Dụng Ý (TVS &amp; Borgonovo)</h1>
+          <p class="brand-subtitle">Hàng chính hãng Italy • Giá thanh lý dọn kho (chưa gồm VAT &amp; vận chuyển)</p>
         </div>
       </div>
 
       <div class="header-actions">
         <button type="button" class="btn btn-outline" id="open-cart-header-btn">
-          <span>🛒 Giỏ đặt hàng</span>
+          <span>🛒 Giỏ hàng</span>
           <span class="cart-count-pill" id="header-cart-count">0</span>
           <span id="header-cart-total">0 ₫</span>
         </button>
         <button type="button" class="btn btn-success" id="quick-export-header-btn">
-          📥 Xuất file Excel (.xlsx)
+          📥 Xuất Excel
         </button>
       </div>
     </div>
   </header>
 
   <main class="main-container">
-    <!-- Supplier Policies from the Excel Sheet -->
-    <section class="policy-banner" aria-label="Chính sách báo giá thanh lý">
-      <div class="policy-item">
-        <span class="policy-icon" aria-hidden="true">🇮🇹</span>
-        <div>
-          <strong>Hàng Xoong Chảo TVS Italy:</strong> Hãng cao cấp hàng đầu của Italy, bền đẹp dùng vài năm không hỏng, không phải hàng đại trà trên thị trường.
-        </div>
-      </div>
-      <div class="policy-item">
-        <span class="policy-icon" aria-hidden="true">🥂</span>
-        <div>
-          <strong>Hàng Thủy Tinh Borgonovo Ý:</strong> Thủy tinh không chì, rất an toàn với sức khỏe, bền và đẹp.
-        </div>
-      </div>
-      <div class="policy-item">
-        <span class="policy-icon" aria-hidden="true">📦</span>
-        <div>
-          <strong>Điều kiện giá thanh lý:</strong> Giá chưa gồm VAT &amp; vận chuyển. Giá thanh lý dọn kho rẻ hơn nhiều so với giá tại xưởng ở Ý (áp dụng khi mua hết từng loại mặt hàng; mua hết kho giảm tiếp).
-        </div>
-      </div>
-    </section>
-
-    <!-- Search & Filter Toolbar -->
+    <!-- Search, Filter & Promo Code Toolbar -->
     <section class="catalog-toolbar" aria-label="Bộ lọc và tìm kiếm sản phẩm">
       <div class="toolbar-top">
         <div class="search-box">
@@ -62,32 +40,52 @@
           <input
             type="search"
             id="search-input"
-            placeholder="Tìm theo tên sản phẩm, mã số (#1, #25), dòng (Blackstone, Velvet, Prim)..."
+            name="q"
+            placeholder="Tìm tên, mã (#1, #25), kích thước (ø20cm)..."
             aria-label="Tìm kiếm sản phẩm"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
           />
         </div>
 
         <select id="series-filter" class="filter-select" aria-label="Lọc theo dòng sản phẩm">
-          <option value="ALL">Tất cả dòng sản phẩm</option>
+          <option value="ALL">Tất cả dòng</option>
         </select>
 
         <select id="sort-select" class="filter-select" aria-label="Sắp xếp sản phẩm">
-          <option value="code-asc">Sắp xếp: Mã số báo giá (Tăng dần)</option>
-          <option value="price-asc">Giá: Thấp đến Cao</option>
-          <option value="price-desc">Giá: Cao đến Thấp</option>
-          <option value="stock-desc">Tồn kho: Nhiều đến Ít</option>
+          <option value="code-asc">Mã: Tăng dần</option>
+          <option value="price-asc">Giá: Thấp → Cao</option>
+          <option value="price-desc">Giá: Cao → Thấp</option>
+          <option value="stock-desc">Tồn: Nhiều → Ít</option>
         </select>
 
         <button type="button" class="btn btn-outline" id="toggle-only-cart-btn" aria-pressed="false">
           Đã chọn (0)
         </button>
+
+        <form id="promo-form" class="promo-form" action="#" method="GET" novalidate>
+          <label for="promo-code-input" class="promo-label">🏷️ Mã giảm:</label>
+          <input
+            type="text"
+            id="promo-code-input"
+            name="promoCode"
+            placeholder="Nhập mã..."
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
+            enterkeyhint="done"
+            aria-describedby="promo-status"
+          />
+          <button type="submit" class="btn btn-primary btn-sm" id="promo-submit-btn">Áp dụng</button>
+          <button type="button" class="btn btn-ghost btn-sm" id="promo-clear-btn" hidden aria-label="Xóa mã giảm giá">✕</button>
+          <span id="promo-status" class="promo-status" role="status" aria-live="polite"></span>
+        </form>
       </div>
 
-      <div class="category-tabs" id="category-tabs" role="toolbar" aria-label="Danh mục mặt hàng"></div>
-
-      <div class="toolbar-stats">
-        <span id="showing-count">Đang tải danh mục sản phẩm...</span>
-        <span>💡 Mẹo đặt nhanh: Bấm <strong>"+1 Thùng"</strong> hoặc <strong>"Lấy hết"</strong> trên từng thẻ sản phẩm, sau đó bấm <strong>"Xuất file Excel (.xlsx)"</strong>.</span>
+      <div class="category-tabs-row">
+        <div class="category-tabs" id="category-tabs" role="toolbar" aria-label="Danh mục mặt hàng"></div>
+        <span id="showing-count" class="showing-count"></span>
       </div>
     </section>
 
@@ -99,15 +97,15 @@
   <aside id="sticky-cart-bar" class="sticky-cart-bar" hidden aria-label="Tóm tắt đơn hàng đang chọn">
     <div class="sticky-cart-inner">
       <div class="sticky-summary">
-        <span>Đã chọn: <strong id="sticky-cart-types">0</strong> mã hàng (<strong id="sticky-cart-units">0</strong> sản phẩm)</span>
-        <span>Tổng tạm tính: <span class="sticky-total-price" id="sticky-cart-price">0 ₫</span> <small>(Chưa VAT &amp; VC)</small></span>
+        <span>Đã chọn: <strong id="sticky-cart-types">0</strong> mã (<strong id="sticky-cart-units">0</strong> SP)</span>
+        <span>Tổng: <span class="sticky-total-price" id="sticky-cart-price">0 ₫</span> <small id="sticky-promo-note">(Chưa VAT &amp; VC)</small></span>
       </div>
       <div class="sticky-actions">
         <button type="button" class="btn btn-outline" id="open-cart-sticky-btn">
-          🛒 Xem &amp; chỉnh sửa giỏ hàng
+          🛒 Giỏ hàng
         </button>
         <button type="button" class="btn btn-success" id="quick-export-sticky-btn">
-          📥 Xuất file Excel (.xlsx)
+          📥 Xuất Excel
         </button>
       </div>
     </div>
@@ -117,7 +115,7 @@
   <!-- MANDATORY: no role="dialog" or aria-modal; native <dialog> opened with showModal() provides them -->
   <dialog id="cart-dialog" class="modal-dialog" closedby="any" aria-labelledby="cart-dialog-title">
     <div class="dialog-header">
-      <h2 id="cart-dialog-title">🛒 Giỏ Đặt Hàng &amp; Xuất File Excel</h2>
+      <h2 id="cart-dialog-title">🛒 Giỏ Đặt Hàng</h2>
       <form method="dialog">
         <button type="submit" class="btn btn-ghost" aria-label="Đóng hộp thoại">✕ Đóng</button>
       </form>
@@ -126,17 +124,33 @@
     <div class="dialog-body">
       <div class="buyer-form-grid">
         <div class="form-field">
-          <label for="buyer-name">Tên khách hàng / Đại lý (tùy chọn)</label>
-          <input type="text" id="buyer-name" placeholder="VD: Đại lý Gia Dụng Minh Anh" autofocus />
+          <label for="buyer-name">Khách hàng / Đại lý</label>
+          <input type="text" id="buyer-name" name="buyerName" autocomplete="name" placeholder="Tên khách hàng / đại lý" autofocus />
         </div>
         <div class="form-field">
-          <label for="buyer-phone">Số điện thoại liên hệ (tùy chọn)</label>
-          <input type="tel" id="buyer-phone" placeholder="VD: 0901 234 567" />
+          <label for="buyer-phone">Số điện thoại</label>
+          <input type="tel" id="buyer-phone" name="buyerPhone" autocomplete="tel" placeholder="0901 234 567" />
         </div>
         <div class="form-field">
-          <label for="buyer-note">Ghi chú đặt hàng (tùy chọn)</label>
-          <input type="text" id="buyer-note" placeholder="VD: Lấy nguyên thùng, giao tại Hà Nội..." />
+          <label for="buyer-note">Ghi chú</label>
+          <input type="text" id="buyer-note" name="buyerNote" placeholder="Giao hàng, xuất kho..." />
         </div>
+        <form id="modal-promo-form" class="form-field" action="#" method="GET" novalidate>
+          <label for="modal-promo-input">Mã giảm giá</label>
+          <div class="modal-promo-row">
+            <input
+              type="text"
+              id="modal-promo-input"
+              name="promoCode"
+              placeholder="Nhập mã..."
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
+              enterkeyhint="done"
+            />
+            <button type="submit" class="btn btn-primary btn-sm">Áp dụng</button>
+          </div>
+        </form>
       </div>
 
       <div id="cart-items-container"></div>
@@ -146,8 +160,8 @@
       <div id="cart-modal-summary">Tổng cộng: <strong>0 ₫</strong></div>
       <div class="header-actions">
         <button type="button" class="btn btn-outline" id="modal-clear-cart-btn">🗑️ Xóa giỏ</button>
-        <button type="button" class="btn btn-outline" id="modal-copy-order-btn">📋 Sao chép nội dung (Zalo)</button>
-        <button type="button" class="btn btn-success" id="modal-export-xlsx-btn">📥 Xuất đơn đặt hàng (.xlsx)</button>
+        <button type="button" class="btn btn-outline" id="modal-copy-order-btn">📋 Copy (Zalo)</button>
+        <button type="button" class="btn btn-success" id="modal-export-xlsx-btn">📥 Xuất Excel (.xlsx)</button>
       </div>
     </div>
   </dialog>

@@ -200,7 +200,7 @@
   }
 
   function generateOrderXlsxBytes(orderData) {
-    const { items, customerName, customerPhone, customerNote, createdAt } = orderData;
+    const { items, customerName, customerPhone, customerNote, createdAt, promoCode, discountRate = 0 } = orderData;
     const rows = [];
 
     // Row 1: Title
@@ -213,6 +213,7 @@
     const buyerSummary = [
       customerName ? `Khách hàng / Đại lý: ${customerName}` : 'Khách hàng / Đại lý: (Chưa nhập)',
       customerPhone ? `SĐT: ${customerPhone}` : '',
+      promoCode && discountRate > 0 ? `Mã giảm giá: ${promoCode.toUpperCase()} (-${Math.round(discountRate * 100)}%)` : '',
       `Ngày tạo đơn: ${createdAt || new Date().toLocaleString('vi-VN')}`
     ].filter(Boolean).join('   |   ');
     rows.push({
@@ -275,27 +276,87 @@
     });
 
     const lastDataRow = firstDataRow + items.length - 1;
-    const totalRowIdx = lastDataRow + 1;
     const totalQty = items.reduce((acc, x) => acc + x.qty, 0);
-    const totalAmount = items.reduce((acc, x) => acc + x.qty * x.product.price, 0);
+    const subtotalAmount = items.reduce((acc, x) => acc + x.qty * x.product.price, 0);
 
-    // Total Row
-    rows.push({
-      height: 26,
-      cells: [
-        { col: 1, type: 'str', val: '', style: 7 },
-        { col: 2, type: 'str', val: '', style: 7 },
-        { col: 3, type: 'str', val: 'TỔNG CỘNG ĐƠN ĐẶT HÀNG', style: 7 },
-        { col: 4, type: 'str', val: '', style: 7 },
-        { col: 5, type: 'str', val: '', style: 7 },
-        { col: 6, type: 'str', val: '', style: 7 },
-        { col: 7, type: 'formula', formula: `SUM(G${firstDataRow}:G${lastDataRow})`, val: totalQty, style: 8 },
-        { col: 8, type: 'str', val: '', style: 7 },
-        { col: 9, type: 'str', val: '', style: 7 },
-        { col: 10, type: 'formula', formula: `SUM(J${firstDataRow}:J${lastDataRow})`, val: totalAmount, style: 8 },
-        { col: 11, type: 'str', val: 'Chưa gồm VAT & VC', style: 7 }
-      ]
-    });
+    if (discountRate > 0) {
+      const subRowIdx = lastDataRow + 1;
+      const discRowIdx = lastDataRow + 2;
+      const discountAmount = Math.round(subtotalAmount * discountRate);
+      const finalAmount = subtotalAmount - discountAmount;
+
+      // Subtotal Row
+      rows.push({
+        height: 24,
+        cells: [
+          { col: 1, type: 'str', val: '', style: 7 },
+          { col: 2, type: 'str', val: '', style: 7 },
+          { col: 3, type: 'str', val: 'TỔNG TẠM TÍNH', style: 7 },
+          { col: 4, type: 'str', val: '', style: 7 },
+          { col: 5, type: 'str', val: '', style: 7 },
+          { col: 6, type: 'str', val: '', style: 7 },
+          { col: 7, type: 'formula', formula: `SUM(G${firstDataRow}:G${lastDataRow})`, val: totalQty, style: 8 },
+          { col: 8, type: 'str', val: '', style: 7 },
+          { col: 9, type: 'str', val: '', style: 7 },
+          { col: 10, type: 'formula', formula: `SUM(J${firstDataRow}:J${lastDataRow})`, val: subtotalAmount, style: 8 },
+          { col: 11, type: 'str', val: '', style: 7 }
+        ]
+      });
+
+      // Discount Row
+      rows.push({
+        height: 24,
+        cells: [
+          { col: 1, type: 'str', val: '', style: 7 },
+          { col: 2, type: 'str', val: '', style: 7 },
+          { col: 3, type: 'str', val: `GIẢM GIÁ MÃ ${(promoCode || 'QUOCNT').toUpperCase()} (-${Math.round(discountRate * 100)}%)`, style: 7 },
+          { col: 4, type: 'str', val: '', style: 7 },
+          { col: 5, type: 'str', val: '', style: 7 },
+          { col: 6, type: 'str', val: '', style: 7 },
+          { col: 7, type: 'str', val: '', style: 7 },
+          { col: 8, type: 'str', val: '', style: 7 },
+          { col: 9, type: 'str', val: '', style: 7 },
+          { col: 10, type: 'formula', formula: `-ROUND(J${subRowIdx}*${discountRate},0)`, val: -discountAmount, style: 8 },
+          { col: 11, type: 'str', val: `Mã ${promoCode}`, style: 7 }
+        ]
+      });
+
+      // Final Total Row
+      rows.push({
+        height: 26,
+        cells: [
+          { col: 1, type: 'str', val: '', style: 7 },
+          { col: 2, type: 'str', val: '', style: 7 },
+          { col: 3, type: 'str', val: 'TỔNG THANH TOÁN (SAU GIẢM)', style: 7 },
+          { col: 4, type: 'str', val: '', style: 7 },
+          { col: 5, type: 'str', val: '', style: 7 },
+          { col: 6, type: 'str', val: '', style: 7 },
+          { col: 7, type: 'num', val: totalQty, style: 8 },
+          { col: 8, type: 'str', val: '', style: 7 },
+          { col: 9, type: 'str', val: '', style: 7 },
+          { col: 10, type: 'formula', formula: `J${subRowIdx}+J${discRowIdx}`, val: finalAmount, style: 8 },
+          { col: 11, type: 'str', val: 'Chưa gồm VAT & VC', style: 7 }
+        ]
+      });
+    } else {
+      // Total Row (no discount)
+      rows.push({
+        height: 26,
+        cells: [
+          { col: 1, type: 'str', val: '', style: 7 },
+          { col: 2, type: 'str', val: '', style: 7 },
+          { col: 3, type: 'str', val: 'TỔNG CỘNG ĐƠN ĐẶT HÀNG', style: 7 },
+          { col: 4, type: 'str', val: '', style: 7 },
+          { col: 5, type: 'str', val: '', style: 7 },
+          { col: 6, type: 'str', val: '', style: 7 },
+          { col: 7, type: 'formula', formula: `SUM(G${firstDataRow}:G${lastDataRow})`, val: totalQty, style: 8 },
+          { col: 8, type: 'str', val: '', style: 7 },
+          { col: 9, type: 'str', val: '', style: 7 },
+          { col: 10, type: 'formula', formula: `SUM(J${firstDataRow}:J${lastDataRow})`, val: subtotalAmount, style: 8 },
+          { col: 11, type: 'str', val: 'Chưa gồm VAT & VC', style: 7 }
+        ]
+      });
+    }
 
     const colWidths = [7, 9, 32, 10, 14, 12, 15, 18, 16, 18, 24];
     const colsXml = colWidths
