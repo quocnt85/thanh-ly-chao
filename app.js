@@ -1,11 +1,6 @@
 (function () {
   const STORAGE_KEY = 'tvs_borgonovo_cart_v1';
   const BUYER_STORAGE_KEY = 'tvs_borgonovo_buyer_v1';
-  const PROMO_STORAGE_KEY = 'tvs_borgonovo_promo_v1';
-
-  const VALID_PROMOS = {
-    quocnt: 0.2
-  };
 
   // Ordered Category Definitions so products never mix Chảo -> Xoong -> Chảo -> Nồi
   const CATEGORY_META = [
@@ -29,7 +24,6 @@
   // State
   let cart = loadCart(); // Map<code, qty>
   let buyerInfo = loadBuyerInfo();
-  let promoCode = loadPromoCode();
   let activeCategory = 'ALL';
   let selectedSizes = new Set();   // Set<string> e.g. 'ø20cm', 'ø24cm'
   let selectedSeries = new Set();  // Set<string> e.g. 'Blackstone', 'Velvet'
@@ -54,15 +48,6 @@
     const mL = sizeStr.match(/(\d+(?:\.\d+)?)\s*L/i);
     if (mL) return parseFloat(mL[1]) * 100;
     return 9999;
-  }
-
-  function getDiscountRate() {
-    return VALID_PROMOS[promoCode] || 0;
-  }
-
-  function getEffectivePrice(basePrice) {
-    const rate = getDiscountRate();
-    return rate > 0 ? Math.round(basePrice * (1 - rate)) : basePrice;
   }
 
   function loadCart() {
@@ -114,81 +99,6 @@
     }
   }
 
-  function loadPromoCode() {
-    try {
-      const saved = (localStorage.getItem(PROMO_STORAGE_KEY) || '').trim().toLowerCase();
-      return VALID_PROMOS[saved] ? saved : '';
-    } catch {
-      return '';
-    }
-  }
-
-  function savePromoCode() {
-    try {
-      if (promoCode) {
-        localStorage.setItem(PROMO_STORAGE_KEY, promoCode);
-      } else {
-        localStorage.removeItem(PROMO_STORAGE_KEY);
-      }
-    } catch {
-      // Ignore storage errors
-    }
-  }
-
-  function applyPromoCode(rawInput) {
-    const clean = String(rawInput || '').trim().toLowerCase();
-    const statusEl = document.getElementById('promo-status');
-
-    if (!clean) {
-      promoCode = '';
-      savePromoCode();
-      syncPromoUI();
-      renderCatalog();
-      updateCartSummaryUI();
-      renderCartModalContent();
-      showToast('Đã gỡ mã giảm giá.');
-      return;
-    }
-
-    if (VALID_PROMOS[clean]) {
-      promoCode = clean;
-      savePromoCode();
-      syncPromoUI();
-      renderCatalog();
-      updateCartSummaryUI();
-      renderCartModalContent();
-      showToast(`🎉 Đã áp dụng mã ${clean.toUpperCase()}: Giảm thêm ${Math.round(VALID_PROMOS[clean] * 100)}%!`);
-    } else {
-      if (statusEl) {
-        statusEl.textContent = 'Mã không hợp lệ';
-        statusEl.classList.add('is-error');
-      }
-      showToast('Mã giảm giá không đúng.');
-    }
-  }
-
-  function syncPromoUI() {
-    const inputEl = document.getElementById('promo-code-input');
-    const modalInputEl = document.getElementById('modal-promo-input');
-    const clearBtn = document.getElementById('promo-clear-btn');
-    const statusEl = document.getElementById('promo-status');
-    const rate = getDiscountRate();
-
-    if (inputEl && document.activeElement !== inputEl) {
-      inputEl.value = promoCode;
-    }
-    if (modalInputEl && document.activeElement !== modalInputEl) {
-      modalInputEl.value = promoCode;
-    }
-    if (clearBtn) {
-      clearBtn.hidden = !promoCode;
-    }
-    if (statusEl) {
-      statusEl.classList.remove('is-error');
-      statusEl.textContent = rate > 0 ? `✓ Giảm ${Math.round(rate * 100)}%` : '';
-    }
-  }
-
   function createSvgPlaceholder(product) {
     const isLid = product.category === 'Vung kính';
     const iconSvg = isLid
@@ -222,8 +132,7 @@
 
   function formatSubtotalHtml(product, qty) {
     if (qty <= 0) return '';
-    const effectivePrice = getEffectivePrice(product.price);
-    const lineTotal = qty * effectivePrice;
+    const lineTotal = qty * product.price;
     const boxes = product.packQty > 1
       ? ` (~${(qty / product.packQty).toFixed(qty % product.packQty === 0 ? 0 : 1)} thùng)`
       : '';
@@ -447,7 +356,7 @@
     }
   }
 
-  function renderProductCardHtml(p, globalCardIndex, rate, ratePercent) {
+  function renderProductCardHtml(p, globalCardIndex) {
     const qty = cart.get(p.code) || 0;
     const photoIdx = activePhotoIndexByCode.get(p.code) || 0;
     const imgSrc = getProductImage(p, photoIdx);
@@ -467,21 +376,12 @@
     const stockClass = p.stock > 0 && p.stock <= 15 ? 'stock-pill low-stock' : 'stock-pill';
     const stockText = p.stock > 0 ? `Kho: ${p.stock}` : 'Hết';
 
-    const effectivePrice = getEffectivePrice(p.price);
     let priceHtml = '';
     if (p.price > 0) {
-      if (rate > 0) {
-        priceHtml = `<div class="price-block">
-          <span class="price-value">${formatVND(effectivePrice)}</span>
-          <del class="price-old">${formatVND(p.price)}</del>
-          <span class="discount-badge">-${ratePercent}%</span>
-        </div>`;
-      } else {
-        priceHtml = `<div class="price-block">
-          <span class="price-value">${formatVND(p.price)}</span>
-          <span class="price-unit">/${escapeHtml(p.unit)}</span>
-        </div>`;
-      }
+      priceHtml = `<div class="price-block">
+        <span class="price-value">${formatVND(p.price)}</span>
+        <span class="price-unit">/${escapeHtml(p.unit)}</span>
+      </div>`;
     } else {
       priceHtml = `<div class="price-gift">0 ₫ (Tặng kèm)</div>`;
     }
@@ -577,8 +477,6 @@
       return;
     }
 
-    const rate = getDiscountRate();
-    const ratePercent = Math.round(rate * 100);
     let globalCardIdx = 0;
 
     // Group into clear Category sections so Chảo, Nồi & Xoong, Lọ, Bình, Cốc, Vung are always separated cleanly
@@ -596,7 +494,7 @@
 
       const cardsHtml = items
         .map((p) => {
-          const html = renderProductCardHtml(p, globalCardIdx, rate, ratePercent);
+          const html = renderProductCardHtml(p, globalCardIdx);
           globalCardIdx += 1;
           return html;
         })
@@ -622,31 +520,27 @@
   function calculateTotals() {
     let totalTypes = 0;
     let totalUnits = 0;
-    let subtotalAmount = 0;
+    let totalAmount = 0;
 
     for (const [code, qty] of cart.entries()) {
       const p = productByCode.get(code);
       if (!p || qty <= 0) continue;
       totalTypes += 1;
       totalUnits += qty;
-      subtotalAmount += qty * p.price;
+      totalAmount += qty * p.price;
     }
 
-    const rate = getDiscountRate();
-    const discountAmount = rate > 0 ? Math.round(subtotalAmount * rate) : 0;
-    const finalAmount = subtotalAmount - discountAmount;
-
-    return { totalTypes, totalUnits, subtotalAmount, discountAmount, finalAmount, rate };
+    return { totalTypes, totalUnits, totalAmount };
   }
 
   function updateCartSummaryUI() {
-    const { totalTypes, totalUnits, finalAmount, rate } = calculateTotals();
+    const { totalTypes, totalUnits, totalAmount } = calculateTotals();
 
     const headerCount = document.getElementById('header-cart-count');
     if (headerCount) headerCount.textContent = totalTypes;
 
     const headerTotal = document.getElementById('header-cart-total');
-    if (headerTotal) headerTotal.textContent = formatVND(finalAmount);
+    if (headerTotal) headerTotal.textContent = formatVND(totalAmount);
 
     const stickyBar = document.getElementById('sticky-cart-bar');
     if (stickyBar) {
@@ -660,14 +554,7 @@
     if (stickyUnits) stickyUnits.textContent = vndFormatter.format(totalUnits);
 
     const stickyPrice = document.getElementById('sticky-cart-price');
-    if (stickyPrice) stickyPrice.textContent = formatVND(finalAmount);
-
-    const stickyPromoNote = document.getElementById('sticky-promo-note');
-    if (stickyPromoNote) {
-      stickyPromoNote.textContent = rate > 0
-        ? `(Đã giảm ${Math.round(rate * 100)}% mã ${promoCode.toUpperCase()} • Chưa VAT & VC)`
-        : '(Chưa VAT & VC)';
-    }
+    if (stickyPrice) stickyPrice.textContent = formatVND(totalAmount);
 
     const onlyCartBtn = document.getElementById('toggle-only-cart-btn');
     if (onlyCartBtn) {
@@ -703,22 +590,19 @@
     if (copyBtn) copyBtn.disabled = false;
     if (clearBtn) clearBtn.disabled = false;
 
-    const { totalUnits, subtotalAmount, discountAmount, finalAmount, rate } = calculateTotals();
+    const { totalUnits, totalAmount } = calculateTotals();
 
     const rowsHtml = items
       .map((item, idx) => {
         const { product: p, qty } = item;
-        const effectivePrice = getEffectivePrice(p.price);
-        const lineTotal = qty * effectivePrice;
+        const lineTotal = qty * p.price;
         const imgSrc = getProductImage(p, 0);
         const boxesStr = p.packQty > 1
           ? `${(qty / p.packQty).toFixed(qty % p.packQty === 0 ? 0 : 1)} thùng (${p.packSpec})`
           : p.packSpec;
 
         const unitPriceCell = p.price > 0
-          ? (rate > 0
-              ? `<div><strong>${formatVND(effectivePrice)}</strong></div><del class="price-old">${formatVND(p.price)}</del>`
-              : formatVND(p.price))
+          ? formatVND(p.price)
           : '0 ₫ (Tặng)';
 
         return `<tr data-code="${p.code}">
@@ -778,11 +662,7 @@
     </div>`;
 
     if (summaryEl) {
-      if (rate > 0) {
-        summaryEl.innerHTML = `<strong>${items.length}</strong> mã (${vndFormatter.format(totalUnits)} SP) • Tạm tính: <del>${formatVND(subtotalAmount)}</del> • Mã <strong>${escapeHtml(promoCode.toUpperCase())} (-${Math.round(rate * 100)}%)</strong>: -${formatVND(discountAmount)} • Tổng: <strong style="font-size:1.15rem;color:var(--accent)">${formatVND(finalAmount)}</strong>`;
-      } else {
-        summaryEl.innerHTML = `<strong>${items.length}</strong> mã (${vndFormatter.format(totalUnits)} SP) • Tổng: <strong style="font-size:1.15rem;color:var(--accent)">${formatVND(finalAmount)}</strong> <span style="font-size:0.8rem;color:var(--text-secondary)">(Chưa VAT & VC)</span>`;
-      }
+      summaryEl.innerHTML = `<strong>${items.length}</strong> mã (${vndFormatter.format(totalUnits)} SP) • Tổng: <strong style="font-size:1.15rem;color:var(--accent)">${formatVND(totalAmount)}</strong> <span style="font-size:0.8rem;color:var(--text-secondary)">(Chưa VAT & VC)</span>`;
     }
   }
 
@@ -819,8 +699,6 @@
         customerName: buyerInfo.name.trim(),
         customerPhone: buyerInfo.phone.trim(),
         customerNote: buyerInfo.note.trim(),
-        promoCode,
-        discountRate: getDiscountRate(),
         createdAt: now.toLocaleString('vi-VN')
       },
       filename
@@ -834,32 +712,26 @@
     if (items.length === 0) return;
     syncBuyerInputs();
 
-    const { totalUnits, subtotalAmount, discountAmount, finalAmount, rate } = calculateTotals();
+    const { totalUnits, totalAmount } = calculateTotals();
     const lines = [
       '📋 ĐƠN ĐẶT HÀNG THANH LÝ GIA DỤNG Ý',
       buyerInfo.name ? `👤 Khách hàng: ${buyerInfo.name}` : '',
       buyerInfo.phone ? `📞 SĐT: ${buyerInfo.phone}` : '',
       buyerInfo.note ? `📝 Ghi chú: ${buyerInfo.note}` : '',
-      rate > 0 ? `🏷️ Mã giảm giá: ${promoCode.toUpperCase()} (-${Math.round(rate * 100)}%)` : '',
       '----------------------------------------'
     ].filter(Boolean);
 
     items.forEach((item, idx) => {
       const { product: p, qty } = item;
-      const effectivePrice = getEffectivePrice(p.price);
-      const lineTotal = qty * effectivePrice;
+      const lineTotal = qty * p.price;
       lines.push(
-        `${idx + 1}. [#${p.code}] ${p.name}: ${qty} ${p.unit} x ${formatVND(effectivePrice)} = ${formatVND(lineTotal)}${p.note ? ` (${p.note})` : ''}`
+        `${idx + 1}. [#${p.code}] ${p.name}: ${qty} ${p.unit} x ${formatVND(p.price)} = ${formatVND(lineTotal)}${p.note ? ` (${p.note})` : ''}`
       );
     });
 
     lines.push('----------------------------------------');
     lines.push(`📦 Tổng: ${items.length} mã (${vndFormatter.format(totalUnits)} SP)`);
-    if (rate > 0) {
-      lines.push(`💵 Tạm tính: ${formatVND(subtotalAmount)}`);
-      lines.push(`🏷️ Giảm ${Math.round(rate * 100)}% (${promoCode.toUpperCase()}): -${formatVND(discountAmount)}`);
-    }
-    lines.push(`💰 TỔNG CỘNG: ${formatVND(finalAmount)} (Chưa VAT & VC)`);
+    lines.push(`💰 TỔNG CỘNG: ${formatVND(totalAmount)} (Chưa VAT & VC)`);
 
     navigator.clipboard.writeText(lines.join('\n')).then(
       () => showToast('Đã sao chép đơn hàng!'),
@@ -893,7 +765,6 @@
     const titleEl = document.getElementById('lightbox-title');
     const metaEl = document.getElementById('lightbox-meta');
     const switchWrap = document.getElementById('lightbox-photo-switch');
-    const effectivePrice = getEffectivePrice(p.price);
 
     if (imgEl) {
       imgEl.src = getProductImage(p, photoIdx);
@@ -903,7 +774,7 @@
       titleEl.textContent = `[#${p.code}] ${p.name}`;
     }
     if (metaEl) {
-      metaEl.textContent = `${p.price > 0 ? formatVND(effectivePrice) + '/' + p.unit : 'Tặng kèm'} • Kho: ${p.stock} ${p.unit} • ${p.packSpec}`;
+      metaEl.textContent = `${p.price > 0 ? formatVND(p.price) + '/' + p.unit : 'Tặng kèm'} • Kho: ${p.stock} ${p.unit} • ${p.packSpec}`;
     }
     if (switchWrap) {
       if (p.images && p.images.length > 1) {
@@ -961,7 +832,6 @@
   }
 
   function init() {
-    syncPromoUI();
     renderCatalog();
     updateCartSummaryUI();
 
@@ -976,40 +846,6 @@
     [nameEl, phoneEl, noteEl].forEach((el) => {
       if (el) el.addEventListener('input', syncBuyerInputs);
     });
-
-    // Promo code forms (toolbar & modal)
-    const promoForm = document.getElementById('promo-form');
-    const promoInput = document.getElementById('promo-code-input');
-    const promoClearBtn = document.getElementById('promo-clear-btn');
-    const promoStatus = document.getElementById('promo-status');
-
-    if (promoForm && promoInput) {
-      promoForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        applyPromoCode(promoInput.value);
-      });
-      promoInput.addEventListener('input', () => {
-        if (promoStatus && promoStatus.classList.contains('is-error')) {
-          promoStatus.textContent = '';
-          promoStatus.classList.remove('is-error');
-        }
-      });
-    }
-
-    if (promoClearBtn) {
-      promoClearBtn.addEventListener('click', () => {
-        applyPromoCode('');
-      });
-    }
-
-    const modalPromoForm = document.getElementById('modal-promo-form');
-    const modalPromoInput = document.getElementById('modal-promo-input');
-    if (modalPromoForm && modalPromoInput) {
-      modalPromoForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        applyPromoCode(modalPromoInput.value);
-      });
-    }
 
     // Mobile sidebar toggle
     const mobileToggleBtn = document.getElementById('mobile-filter-toggle-btn');
@@ -1189,7 +1025,6 @@
     openCartBtns.forEach((btn) => {
       if (btn && cartDialog) {
         btn.addEventListener('click', () => {
-          syncPromoUI();
           renderCartModalContent();
           cartDialog.showModal();
         });
